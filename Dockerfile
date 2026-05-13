@@ -25,4 +25,4 @@ RUN ./mvnw package -DskipTests
 EXPOSE 8083
 
 #ejecutar el jar
-ENTRYPOINT ^["java", "-jar", "target/notificaciones-service-0.0.1SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "target/notificaciones-service-0.0.1-SNAPSHOT.jar"]
