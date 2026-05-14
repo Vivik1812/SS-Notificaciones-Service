@@ -17,17 +17,22 @@ public class NotificacionListener {
 
     @RabbitListener(queues = RabbitMQConfig.COLA_NOTIFICACIONES)
     public void procesarNuevaPublicacion(String mensaje) {
-        System.out.println("Evento recibido desde Publicaciones: " + mensaje);
+        try {
+            System.out.println("Evento recibido desde Publicaciones: " + mensaje);
 
-        Notificacion notificacion = new Notificacion();
-        notificacion.setIdUsuarioDestino(1L); // temporal hasta que el evento traiga usuarioId
-        notificacion.setTitulo("Nueva publicación");
-        notificacion.setMensaje(mensaje);
-        notificacion.setTipoNotificacion(TipoNotificacion.NUEVA_PUBLICACION);
-        notificacion.setLeida(false);
-        notificacion.setFechaCreacion(LocalDateTime.now());
+            Notificacion notificacion = new Notificacion();
+            notificacion.setIdUsuarioDestino(1L);
+            notificacion.setTitulo("Nueva publicación");
+            notificacion.setMensaje(mensaje);
+            notificacion.setTipoNotificacion(TipoNotificacion.NUEVA_PUBLICACION);
+            notificacion.setLeida(false);
+            notificacion.setFechaCreacion(LocalDateTime.now());
 
-        notificacionService.guardar(notificacion);
-        System.out.println("Notificacion guardada correctamente");
+            notificacionService.guardar(notificacion);
+            System.out.println("Notificacion guardada correctamente");
+
+        } catch (Exception e) {
+            System.err.println("Error procesando mensaje RabbitMQ: " + e.getMessage());
+        }
     }
 }
