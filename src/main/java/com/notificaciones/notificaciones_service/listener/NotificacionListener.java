@@ -1,7 +1,6 @@
 package com.notificaciones.notificaciones_service.listener;
 
 import com.notificaciones.notificaciones_service.config.RabbitMQConfig;
-import com.notificaciones.notificaciones_service.model.EventoPublicacion;
 import com.notificaciones.notificaciones_service.model.Notificacion;
 import com.notificaciones.notificaciones_service.model.TipoNotificacion;
 import com.notificaciones.notificaciones_service.service.NotificacionService;
@@ -17,17 +16,18 @@ public class NotificacionListener {
     private final NotificacionService notificacionService;
 
     @RabbitListener(queues = RabbitMQConfig.COLA_NOTIFICACIONES)
-    public void procesarNuevaPublicacion(EventoPublicacion evento) {
-        System.out.println("Nueva publicacion recibida: " + evento.getTitulo());
+    public void procesarNuevaPublicacion(String mensaje) {
+        System.out.println("Evento recibido desde Publicaciones: " + mensaje);
 
         Notificacion notificacion = new Notificacion();
-        notificacion.setIdUsuarioDestino(evento.getUsuarioId());
-        notificacion.setTitulo("Nueva publicación cerca de ti");
-        notificacion.setMensaje("Se publicó: " + evento.getTitulo());
+        notificacion.setIdUsuarioDestino(1L); // temporal hasta que el evento traiga usuarioId
+        notificacion.setTitulo("Nueva publicación");
+        notificacion.setMensaje(mensaje);
         notificacion.setTipoNotificacion(TipoNotificacion.NUEVA_PUBLICACION);
         notificacion.setLeida(false);
         notificacion.setFechaCreacion(LocalDateTime.now());
 
         notificacionService.guardar(notificacion);
+        System.out.println("Notificacion guardada correctamente");
     }
 }
