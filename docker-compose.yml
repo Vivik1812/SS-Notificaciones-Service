@@ -3,10 +3,11 @@ version: '3.8'
 services:
   notificaciones-service:
     build: .
+    container_name: notificaciones-service
     ports:
       - "8083:8083"
     environment:
-      DB_HOST: postgres
+      DB_HOST: notificaciones-db
       DB_PORT: 5432
       DB_NAME: notificaciones_db
       DB_USERNAME: postgres
@@ -17,13 +18,34 @@ services:
       RABBITMQ_PASSWORD: kajL4rdiURb0bd1U2X7dFt_FQlCGoYkR
       RABBITMQ_VHOST: wmjcvznb
     depends_on:
-      - postgres
+      notificaciones-db:
+        condition: service_healthy
+    networks:
+      - ss-net
+    restart: unless-stopped
 
-  postgres:
+  notificaciones-db:
     image: postgres:15
+    container_name: notificaciones-db
     environment:
       POSTGRES_DB: notificaciones_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    volumes:
+      - notificaciones_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ss-net
+
+volumes:
+  notificaciones_data:
+
+networks:
+  ss-net:
+    external: true

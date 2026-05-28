@@ -6,8 +6,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 
 @Component
 public class JwtUtil {
@@ -16,8 +16,7 @@ public class JwtUtil {
     private String secret;
 
     private Key getKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public Claims extractClaims(String token) {
@@ -29,7 +28,7 @@ public class JwtUtil {
     }
 
     public String extractUserId(String token) {
-        return extractClaims(token).getSubject();
+        return String.valueOf(extractClaims(token).get("id"));
     }
 
     public boolean isTokenValid(String token) {
